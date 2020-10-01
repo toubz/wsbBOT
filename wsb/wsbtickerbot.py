@@ -6,6 +6,7 @@ import json
 import pprint
 import operator
 import datetime
+import requests
 import yfinance as yf
 import pandas as pd
 from praw.models import MoreComments
@@ -140,9 +141,9 @@ def output_data(subreddit, text):
    print("\nPosting...")
    print(title)
    print(text)
-   outF = open("stockData.txt")
-   outF.writelines(text)
-   outF.close()
+   # outF = open("stockData.txt")
+   # outF.writelines(text)
+   # outF.close()
 
    
    # subreddit.submit(title, selftext=text)
@@ -190,7 +191,13 @@ def run(mode, sub, num_submissions):
                break
          
          # search through all comments and replies to comments
-         comments = post.comments
+         try:
+            comments = post.comments
+            pass
+         except Exception:
+            print("Lost Connection Trying again.. ")
+
+         #comments = post.comments 
          for comment in comments:
             # without this, would throw AttributeError since the instance in this represents the "load more comments" option
             if isinstance(comment, MoreComments):
@@ -233,7 +240,6 @@ def run(mode, sub, num_submissions):
       # setting up formatting for table
       text += "\n{} | {} | {} | {}".format(url, ticker.bullish, ticker.bearish, ticker.neutral)
 
-   text += "\n\nTake a look at my [source code](https://github.com/RyanElliott10/wsbtickerbot) and make some contributions if you're interested."
 
    # post to the subreddit if it is in bot mode (i.e. not testing)
    if not mode:
